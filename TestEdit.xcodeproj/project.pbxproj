@@ -7,9 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3590E13C28D894C100DE43D2 /* InputSumFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3590E13B28D894C100DE43D2 /* InputSumFieldView.swift */; };
 		3590E13F28D8958400DE43D2 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3590E13E28D8958400DE43D2 /* SnapKit */; };
-		3590E14228D895F000DE43D2 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3590E14128D895F000DE43D2 /* CustomTextField.swift */; };
+		3590E14428D9105A00DE43D2 /* InputSumField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3590E14328D9105A00DE43D2 /* InputSumField.swift */; };
 		38536DAE28BE44C50066056B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38536DAD28BE44C50066056B /* AppDelegate.swift */; };
 		38536DB028BE44C50066056B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38536DAF28BE44C50066056B /* SceneDelegate.swift */; };
 		38536DB228BE44C50066056B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38536DB128BE44C50066056B /* ViewController.swift */; };
@@ -21,8 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3590E13B28D894C100DE43D2 /* InputSumFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputSumFieldView.swift; sourceTree = "<group>"; };
-		3590E14128D895F000DE43D2 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
+		3590E14328D9105A00DE43D2 /* InputSumField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputSumField.swift; sourceTree = "<group>"; };
 		38536DAA28BE44C50066056B /* TestEdit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestEdit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		38536DAD28BE44C50066056B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		38536DAF28BE44C50066056B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -47,15 +45,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3590E14028D895DC00DE43D2 /* InputSum */ = {
-			isa = PBXGroup;
-			children = (
-				3590E13B28D894C100DE43D2 /* InputSumFieldView.swift */,
-				3590E14128D895F000DE43D2 /* CustomTextField.swift */,
-			);
-			path = InputSum;
-			sourceTree = "<group>";
-		};
 		38536DA128BE44C50066056B = {
 			isa = PBXGroup;
 			children = (
@@ -78,7 +67,7 @@
 				38536DAD28BE44C50066056B /* AppDelegate.swift */,
 				38536DAF28BE44C50066056B /* SceneDelegate.swift */,
 				38536DB128BE44C50066056B /* ViewController.swift */,
-				3590E14028D895DC00DE43D2 /* InputSum */,
+				3590E14328D9105A00DE43D2 /* InputSumField.swift */,
 				38536DC128BE44DC0066056B /* TextField.swift */,
 				38727D6128C9D82100BEF034 /* RoundedTextField.swift */,
 				38536DB328BE44C50066056B /* Main.storyboard */,
@@ -166,13 +155,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3590E14228D895F000DE43D2 /* CustomTextField.swift in Sources */,
 				38536DB228BE44C50066056B /* ViewController.swift in Sources */,
-				3590E13C28D894C100DE43D2 /* InputSumFieldView.swift in Sources */,
 				38727D6228C9D82100BEF034 /* RoundedTextField.swift in Sources */,
 				38536DAE28BE44C50066056B /* AppDelegate.swift in Sources */,
 				38536DB028BE44C50066056B /* SceneDelegate.swift in Sources */,
 				38536DC228BE44DC0066056B /* TextField.swift in Sources */,
+				3590E14428D9105A00DE43D2 /* InputSumField.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -8,46 +8,65 @@
 import UIKit
 
 class ViewController: UIViewController {
-    @IBOutlet weak var inputSumFieldView: InputSumFieldView!
+    @IBOutlet weak var inputSumFieldView: InputSumField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        inputSumFieldView.textField.placeholder = "Сумма"
-//        textFLDNew.titleText = "titleText"
-//        textFLDNew.placeholder = "placeholder"
+        inputSumFieldView.enclosingSuperview = view
+        inputSumFieldView.textField.placeholder = "Сума"
+        inputSumFieldView.currencyButton.setTitle("UAH", for: .normal)
+        inputSumFieldView.commissionLabel.text = "Комісія: 0.00 ₴"
+        inputSumFieldView.exchangeRateLabel.text = "1 $ → 37.00 ₴"
+        
+        
+        // MARK: - Tips
+        
+        // allow to input 4 or less characters
+        inputSumFieldView.shouldUpdate = { $0.count < 5 }
+        
+        
+        // Control when next button tapped
+        inputSumFieldView.shouldReturn = {
+            print("Next button tapped")
+            return false
+        }
+        
+        inputSumFieldView.didBeginEditing = {
+            print("begin editing")
+        }
+        
+        inputSumFieldView.didEndEditing = { text in
+            print("end editing text: \(text)")
+        }
+        
+        inputSumFieldView.didUpdateText = { text in
+            print("updated text: \(text)")
+        }
+        
+        inputSumFieldView.currencyButton.addTarget(self, action: #selector(currencyPressed), for: .touchUpInside)
     }
     
     
     @IBAction func ShowErrorNew(_ sender: Any) {
-//        textFLDNew.errorText = "errorText errorText errorText errorText errorText errorText"
+        inputSumFieldView.errorText = "errorText errorText errorText errorText errorText errorText"
     }
     @IBAction func ClearErrorNew(_ sender: Any) {
-//        textFLDNew.errorText = ""
+        inputSumFieldView.errorText = nil
     }
     @IBAction func EndEditNew(_ sender: Any) {
-//        textFLDNew.endEditing(true)
-    }
-    @IBAction func enableDisableNew(_ sender: Any) {
-//        textFLDNew.isEnabled = !textFLDNew.isEnabled
+        inputSumFieldView.endEditing(true)
     }
     @IBAction func showHint(_ sender: Any) {
-//        textFLDNew.hint = "Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint"
+        inputSumFieldView.hintText = "Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint"
     }
-    var rightView: UIView = {
-        let view = UIButton()
-        view.backgroundColor = .red
-        view.setTitle("right", for: .normal)
-        view.frame = CGRect(x: 0, y: 0, width: 40, height: 60)
-        return view
-    }()
-    @IBAction func showHideRight(_ sender: Any) {
-//        if let sv = rightView.subviews.first as? UIStackView,
-//           sv.contains(rightView) {
-//            textFLDNew.setRightView(nil)
-//        } else {
-//            textFLDNew.setRightView(rightView)
-//        }
+    @IBAction func hideHint(_ sender: Any) {
+        inputSumFieldView.hintText = nil
+    }
+    
+    @objc
+    private func currencyPressed() {
+        print("currency button pressed")
     }
     
 }
