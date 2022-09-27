@@ -26,7 +26,7 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bdb-Pv-8DN" customClass="InputSumField" customModule="TestEdit" customModuleProvider="target">
+                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bdb-Pv-8DN" customClass="InputTextView" customModule="TestEdit" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="36.5" width="382" height="99"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
@@ -93,7 +93,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="1ss-5v-NEd"/>
                     <connections>
-                        <outlet property="inputSumFieldView" destination="bdb-Pv-8DN" id="hKD-d2-6Jo"/>
+                        <outlet property="inputTextView" destination="bdb-Pv-8DN" id="5vE-DZ-cH4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

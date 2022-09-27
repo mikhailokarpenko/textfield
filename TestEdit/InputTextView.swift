@@ -1,49 +1,39 @@
+//
+// Copyright © 2022 Monvel LTD. All rights reserved.
+//
+// Created by Mike Karpenko
+//
+
 import SnapKit
 import UIKit
 
-protocol InputFieldFocusDelegate: AnyObject {
-    func didTap(_ field: InputSumField)
+protocol InputFocusDelegate: AnyObject {
+    func didTap(_ field: InputTextView)
 }
 
-class InputSumField: UIView {
+class InputTextView: UIView {
     private let cyanColor: UIColor = .cyan//Asset.Palette.aqua.color
-    private let blackColor: UIColor = .black//Asset.Palette.grey30.color
-    private let grey230: UIColor = .lightGray//Asset.Palette.grey230.color
+    private let blackColor: UIColor = .gray//Asset.Palette.grey30.color
+    private let grey230: UIColor = .gray//Asset.Palette.grey230.color
     private let redColor: UIColor = .red//Asset.Palette.red.color
     private let grey100: UIColor = .gray//Asset.Palette.grey100.color
     /// superview responsible for calling layoutIfNeeded upon inputfield's layout changes
     weak var enclosingSuperview: UIView?
-    weak var delegate: InputFieldFocusDelegate?
+    weak var delegate: InputFocusDelegate?
     private var bottomLabelHiddenConstraint: Constraint!
-    lazy var textField: UITextField = {
-        let tf = UITextField()
-        tf.tintColor = cyanColor
-        return tf
+    lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        return label
     }()
-
-    lazy var currencyButton: UIButton = {
+    lazy var textView: UITextView = {
+        let tv = UITextView()
+        tv.tintColor = cyanColor
+        return tv
+    }()
+    private let clearButton: UIButton = {
         let btn = UIButton()
-        btn.setTitleColor(blackColor, for: .normal)
-        btn.setContentCompressionResistancePriority(.required, for: .horizontal)
+        btn.setImage(UIImage(named: "cross"), for: .normal)
         return btn
-    }()
-
-    private lazy var separatorView: UIView = {
-        let view = UIView()
-        view.backgroundColor = grey230
-        return view
-    }()
-
-    lazy var commissionLabel: UILabel = {
-        let lbl = UILabel()
-        lbl.textColor = grey100
-        return lbl
-    }()
-
-    lazy var exchangeRateLabel: UILabel = {
-        let lbl = UILabel()
-        lbl.textColor = grey100
-        return lbl
     }()
 
     public var errorFont: UIFont = .systemFont(ofSize: 18.0, weight: .regular) {
@@ -95,17 +85,17 @@ class InputSumField: UIView {
     var shouldReturn: (() -> Bool)?
 
     override var isFirstResponder: Bool {
-        return self.textField.isFirstResponder
+        return self.textView.isFirstResponder
     }
 
     @discardableResult
     override func becomeFirstResponder() -> Bool {
-        return self.textField.becomeFirstResponder()
+        return self.textView.becomeFirstResponder()
     }
 
     @discardableResult
     override func resignFirstResponder() -> Bool {
-        return self.textField.resignFirstResponder()
+        return self.textView.resignFirstResponder()
     }
 
     override func awakeFromNib() {
@@ -125,21 +115,18 @@ class InputSumField: UIView {
     private func setup() {
         addSubviews()
         makeConstraints()
-        textField.delegate = self
+        textView.delegate = self
         clipsToBounds = true
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTap))
         let textFieldTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTap))
         roundedContainerView.addGestureRecognizer(tapRecognizer)
-        textField.addGestureRecognizer(textFieldTapRecognizer)
-        textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        textView.addGestureRecognizer(textFieldTapRecognizer)
     }
 
     private func addSubviews() {
-        roundedContainerView.addSubview(textField)
-        roundedContainerView.addSubview(currencyButton)
-        roundedContainerView.addSubview(separatorView)
-        roundedContainerView.addSubview(commissionLabel)
-        roundedContainerView.addSubview(exchangeRateLabel)
+        roundedContainerView.addSubview(titleLabel)
+        roundedContainerView.addSubview(textView)
+        roundedContainerView.addSubview(clearButton)
         addSubview(roundedContainerView)
         addSubview(footerLabel)
     }
@@ -147,27 +134,21 @@ class InputSumField: UIView {
     private func makeConstraints() {
         let sideInset = 16
 
-        textField.snp.makeConstraints { make in
-            make.top.leading.equalToSuperview().inset(sideInset)
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(6)
+            make.leading.equalToSuperview().inset(sideInset)
+            make.trailing.equalTo(clearButton.snp.leading).offset(sideInset)
         }
-        currencyButton.snp.makeConstraints { make in
-            make.centerY.equalTo(textField.snp.centerY)
-            make.leading.greaterThanOrEqualTo(textField.snp.trailing).offset(24)
-            make.trailing.equalToSuperview().inset(sideInset)
+        textView.snp.makeConstraints { make in
+            make.top.equalTo(titleLabel.snp.bottom)
+            make.leading.equalToSuperview().inset(sideInset)
+            make.trailing.equalTo(clearButton.snp.leading).inset(sideInset)
+            make.bottom.equalToSuperview().inset(6)
         }
-        separatorView.snp.makeConstraints { make in
-            make.top.equalTo(textField.snp.bottom).offset(sideInset)
-            make.leading.trailing.equalToSuperview().inset(sideInset)
-            make.height.equalTo(0.5)
-        }
-        commissionLabel.snp.makeConstraints { make in
-            make.leading.bottom.equalToSuperview().inset(sideInset)
-            make.top.equalTo(separatorView.snp.bottom).offset(4)
-        }
-        exchangeRateLabel.snp.makeConstraints { make in
-            make.trailing.bottom.equalToSuperview().inset(sideInset)
-            make.top.equalTo(separatorView.snp.bottom).offset(4)
-            make.leading.greaterThanOrEqualTo(commissionLabel.snp.trailing).inset(4)
+        clearButton.snp.makeConstraints { make in
+            make.top.trailing.equalToSuperview().inset(sideInset)
+            make.bottom.greaterThanOrEqualToSuperview().inset(sideInset)
+            make.height.width.equalTo(24)
         }
         roundedContainerView.snp.makeConstraints { make in
             make.top.leading.trailing.width.equalToSuperview()
@@ -219,35 +200,24 @@ class InputSumField: UIView {
             self.enclosingSuperview?.layoutIfNeeded()
         }
     }
-
-    private func updateCurrencyButton(hasImage: Bool) {
-        currencyButton.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
-        currencyButton.titleLabel?.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
-        currencyButton.imageView?.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
-        let image: UIImage? = hasImage ? UIImage(named: "Arrow_down") : nil
-        currencyButton.setImage(image, for: .normal)
-    }
 }
 
-extension InputSumField: UITextFieldDelegate {
-    func textFieldDidBeginEditing(_: UITextField) {
-        self.didBeginEditing?()
-        updateBordersColor()
-        updateCurrencyButton(hasImage: true)
+extension InputTextView: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        didBeginEditing?()
     }
 
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        self.didEndEditing?(textField.text ?? "")
-        updateBordersColor()
-        updateCurrencyButton(hasImage: false)
+    func textViewDidEndEditing(_ textView: UITextView) {
+        didEndEditing?(textView.text ?? "")
+        resignFirstResponder()
     }
 
-    func textField(_: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let currentText = textField.text ?? ""
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let currentText = textView.text ?? ""
         if let textRange = Range(range, in: currentText) {
             let nextText = currentText.replacingCharacters(
                 in: textRange,
-                with: string
+                with: text
             )
             let shouldUpdate = self.shouldUpdate?(nextText) ?? true
             return shouldUpdate
@@ -255,12 +225,8 @@ extension InputSumField: UITextFieldDelegate {
         return true
     }
 
-    func textFieldShouldReturn(_: UITextField) -> Bool {
-        return shouldReturn?() ?? true
-    }
-
-    @objc
-    func textFieldDidChange(textfield: UITextField) {
-        didUpdateText?(textField.text ?? "")
+    func textViewDidChange(_ textView: UITextView) {
+        didUpdateText?(textView.text ?? "")
     }
 }
+

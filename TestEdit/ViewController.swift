@@ -8,60 +8,55 @@
 import UIKit
 
 class ViewController: UIViewController {
-    @IBOutlet weak var inputSumFieldView: InputSumField!
+    @IBOutlet weak var inputTextView: InputTextView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        inputSumFieldView.enclosingSuperview = view
-        inputSumFieldView.textField.placeholder = "Сума"
-        inputSumFieldView.currencyButton.setTitle("UAH", for: .normal)
-        inputSumFieldView.commissionLabel.text = "Комісія: 0.00 ₴"
-        inputSumFieldView.exchangeRateLabel.text = "1 $ → 37.00 ₴"
+        inputTextView.titleLabel.text = "Тайтл"
+        inputTextView.textView.text = "some text"
         
         
         // MARK: - Tips
         
         // allow to input 4 or less characters
-        inputSumFieldView.shouldUpdate = { $0.count < 5 }
-        
-        
+        inputTextView.shouldUpdate = { $0.count < 55 }
+
+
         // Control when next button tapped
-        inputSumFieldView.shouldReturn = {
+        inputTextView.shouldReturn = {
             print("Next button tapped")
             return false
         }
-        
-        inputSumFieldView.didBeginEditing = {
+
+        inputTextView.didBeginEditing = {
             print("begin editing")
         }
-        
-        inputSumFieldView.didEndEditing = { text in
+
+        inputTextView.didEndEditing = { text in
             print("end editing text: \(text)")
         }
-        
-        inputSumFieldView.didUpdateText = { text in
+
+        inputTextView.didUpdateText = { text in
             print("updated text: \(text)")
         }
-        
-        inputSumFieldView.currencyButton.addTarget(self, action: #selector(currencyPressed), for: .touchUpInside)
     }
     
     
     @IBAction func ShowErrorNew(_ sender: Any) {
-        inputSumFieldView.errorText = "errorText errorText errorText errorText errorText errorText"
+        inputTextView.errorText = "errorText errorText errorText errorText errorText errorText"
     }
     @IBAction func ClearErrorNew(_ sender: Any) {
-        inputSumFieldView.errorText = nil
+        inputTextView.errorText = nil
     }
     @IBAction func EndEditNew(_ sender: Any) {
-        inputSumFieldView.endEditing(true)
+        inputTextView.endEditing(true)
     }
     @IBAction func showHint(_ sender: Any) {
-        inputSumFieldView.hintText = "Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint"
+        inputTextView.hintText = "Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint"
     }
     @IBAction func hideHint(_ sender: Any) {
-        inputSumFieldView.hintText = nil
+        inputTextView.hintText = nil
     }
     
     @objc
