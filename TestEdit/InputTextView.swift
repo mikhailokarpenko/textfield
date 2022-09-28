@@ -21,18 +21,31 @@ class InputTextView: UIView {
     weak var enclosingSuperview: UIView?
     weak var delegate: InputFocusDelegate?
     private var bottomLabelHiddenConstraint: Constraint!
+    private let minTextViewHeight: CGFloat = 24
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         return label
     }()
+    
     lazy var textView: UITextView = {
         let tv = UITextView()
         tv.tintColor = cyanColor
+        tv.textAlignment = .left
+        tv.isScrollEnabled = false
+        tv.backgroundColor = .clear
+        tv.isUserInteractionEnabled = false
+        tv.textContainer.lineFragmentPadding = 0
+        tv.backgroundColor = .blue
+//        tv.translatesAutoresizingMaskIntoConstraints = false
+//        tv.clipsToBounds = false
+        tv.setContentCompressionResistancePriority(.required, for: .vertical)
         return tv
     }()
+    
     private let clearButton: UIButton = {
         let btn = UIButton()
         btn.setImage(UIImage(named: "cross"), for: .normal)
+        btn.addTarget(self, action: #selector(clearPressed), for: .touchUpInside)
         return btn
     }()
 
@@ -116,7 +129,7 @@ class InputTextView: UIView {
         addSubviews()
         makeConstraints()
         textView.delegate = self
-        clipsToBounds = true
+//        clipsToBounds = true
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTap))
         let textFieldTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTap))
         roundedContainerView.addGestureRecognizer(tapRecognizer)
@@ -137,12 +150,12 @@ class InputTextView: UIView {
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(6)
             make.leading.equalToSuperview().inset(sideInset)
-            make.trailing.equalTo(clearButton.snp.leading).offset(sideInset)
+            make.trailing.equalTo(clearButton.snp.leading)
         }
         textView.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom)
             make.leading.equalToSuperview().inset(sideInset)
-            make.trailing.equalTo(clearButton.snp.leading).inset(sideInset)
+            make.trailing.equalTo(clearButton.snp.leading)
             make.bottom.equalToSuperview().inset(6)
         }
         clearButton.snp.makeConstraints { make in
@@ -179,6 +192,11 @@ class InputTextView: UIView {
         }
     }
 
+    @objc
+    private func clearPressed() {
+        textView.text = nil
+    }
+
     private func setupBottomLabel(error: String?, hint: String?) {
         var text = String()
         if let err = error, !err.isEmpty {
@@ -205,11 +223,13 @@ class InputTextView: UIView {
 extension InputTextView: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         didBeginEditing?()
+        updateBordersColor()
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
         didEndEditing?(textView.text ?? "")
         resignFirstResponder()
+        updateBordersColor()
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
@@ -227,6 +247,8 @@ extension InputTextView: UITextViewDelegate {
 
     func textViewDidChange(_ textView: UITextView) {
         didUpdateText?(textView.text ?? "")
+        textView.sizeToFit()
+        enclosingSuperview?.layoutIfNeeded()
     }
 }
 

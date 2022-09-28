@@ -13,8 +13,8 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        inputTextView.enclosingSuperview = view
         inputTextView.titleLabel.text = "Тайтл"
-        inputTextView.textView.text = "some text"
         
         
         // MARK: - Tips
