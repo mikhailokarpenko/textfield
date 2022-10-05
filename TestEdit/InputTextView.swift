@@ -37,6 +37,7 @@ class InputTextView: UIView {
         tv.text = placeholder
         tv.font = placeholderFont
         tv.textColor = placeholderColor
+        tv.isHidden = true
         return tv
     }()
     
@@ -51,6 +52,7 @@ class InputTextView: UIView {
         let btn = UIButton()
         btn.setImage(UIImage(named: "cross"), for: .normal)
         btn.addTarget(self, action: #selector(clearPressed), for: .touchUpInside)
+        btn.isHidden = true
         return btn
     }()
 
@@ -115,11 +117,15 @@ class InputTextView: UIView {
 
     @discardableResult
     override func becomeFirstResponder() -> Bool {
+        self.textView.isHidden = false
+        self.updateClearButtonVisibility()
         return self.textView.becomeFirstResponder()
     }
 
     @discardableResult
     override func resignFirstResponder() -> Bool {
+        self.textView.isHidden = self.textView.text == placeholder ? true : false
+        self.clearButton.isHidden = true
         return self.textView.resignFirstResponder()
     }
 
@@ -202,6 +208,7 @@ class InputTextView: UIView {
     private func clearPressed() {
         textView.text = nil
         updatePlaceholder()
+        updateClearButtonVisibility()
     }
 
     private func setupBottomLabel(error: String?, hint: String?) {
@@ -237,6 +244,16 @@ class InputTextView: UIView {
             self.textView.font = placeholderFont
             self.textView.textColor = placeholderColor
             self.textView.selectedTextRange = self.textView.textRange(from: self.textView.beginningOfDocument, to: self.textView.beginningOfDocument)
+        }
+    }
+    
+    private func updateClearButtonVisibility() {
+        if let text = self.textView.text,
+           !text.isEmpty,
+           text != placeholder {
+            clearButton.isHidden = false
+        } else {
+            clearButton.isHidden = true
         }
     }
 }
@@ -277,6 +294,7 @@ extension InputTextView: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         didUpdateText?(textView.text ?? "")
         updatePlaceholder()
+        updateClearButtonVisibility()
     }
 }
 
