@@ -15,12 +15,13 @@ class ViewController: UIViewController {
         
         inputTextView.enclosingSuperview = view
         inputTextView.titleLabel.text = "Тайтл"
+        inputTextView.placeholder = "Подсказка"
         
         
         // MARK: - Tips
         
         // allow to input 4 or less characters
-        inputTextView.shouldUpdate = { $0.count < 55 }
+        inputTextView.shouldUpdate = { $0.count < 155 }
 
 
         // Control when next button tapped

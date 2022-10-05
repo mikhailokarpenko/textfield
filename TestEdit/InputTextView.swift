@@ -21,7 +21,6 @@ class InputTextView: UIView {
     weak var enclosingSuperview: UIView?
     weak var delegate: InputFocusDelegate?
     private var bottomLabelHiddenConstraint: Constraint!
-    private let minTextViewHeight: CGFloat = 24
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         return label
@@ -35,11 +34,17 @@ class InputTextView: UIView {
         tv.backgroundColor = .clear
         tv.isUserInteractionEnabled = false
         tv.textContainer.lineFragmentPadding = 0
-        tv.backgroundColor = .blue
-//        tv.translatesAutoresizingMaskIntoConstraints = false
-//        tv.clipsToBounds = false
-        tv.setContentCompressionResistancePriority(.required, for: .vertical)
+        tv.text = placeholder
+        tv.font = placeholderFont
+        tv.textColor = placeholderColor
         return tv
+    }()
+    
+    private lazy var mainStackView: UIStackView = {
+        let sv = UIStackView(arrangedSubviews: [titleLabel, textView])
+        sv.axis = .vertical
+        sv.spacing = 0
+        return sv
     }()
     
     private let clearButton: UIButton = {
@@ -60,6 +65,13 @@ class InputTextView: UIView {
             self.footerLabel.font = newValue
         }
     }
+    
+    public var textFont: UIFont = .systemFont(ofSize: 18, weight: .regular)
+    public var textColor: UIColor = .black
+    public var placeholderFont: UIFont = .systemFont(ofSize: 18, weight: .regular)
+    public var placeholderColor: UIColor = .lightGray
+    
+    var placeholder: String?
 
     var hintText: String? {
         didSet {
@@ -129,7 +141,6 @@ class InputTextView: UIView {
         addSubviews()
         makeConstraints()
         textView.delegate = self
-//        clipsToBounds = true
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTap))
         let textFieldTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTap))
         roundedContainerView.addGestureRecognizer(tapRecognizer)
@@ -137,8 +148,7 @@ class InputTextView: UIView {
     }
 
     private func addSubviews() {
-        roundedContainerView.addSubview(titleLabel)
-        roundedContainerView.addSubview(textView)
+        roundedContainerView.addSubview(mainStackView)
         roundedContainerView.addSubview(clearButton)
         addSubview(roundedContainerView)
         addSubview(footerLabel)
@@ -146,25 +156,21 @@ class InputTextView: UIView {
 
     private func makeConstraints() {
         let sideInset = 16
+        let verticalInset = 6
 
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(6)
+        mainStackView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(sideInset)
             make.trailing.equalTo(clearButton.snp.leading)
-        }
-        textView.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom)
-            make.leading.equalToSuperview().inset(sideInset)
-            make.trailing.equalTo(clearButton.snp.leading)
-            make.bottom.equalToSuperview().inset(6)
+            make.top.bottom.equalToSuperview().inset(verticalInset)
+            make.bottom.equalToSuperview().inset(verticalInset)
         }
         clearButton.snp.makeConstraints { make in
             make.top.trailing.equalToSuperview().inset(sideInset)
-            make.bottom.greaterThanOrEqualToSuperview().inset(sideInset)
             make.height.width.equalTo(24)
         }
         roundedContainerView.snp.makeConstraints { make in
             make.top.leading.trailing.width.equalToSuperview()
+            make.height.greaterThanOrEqualTo(56)
         }
         footerLabel.snp.makeConstraints { make in
             make.top.equalTo(roundedContainerView.snp.bottom).offset(4)
@@ -195,6 +201,7 @@ class InputTextView: UIView {
     @objc
     private func clearPressed() {
         textView.text = nil
+        updatePlaceholder()
     }
 
     private func setupBottomLabel(error: String?, hint: String?) {
@@ -218,37 +225,58 @@ class InputTextView: UIView {
             self.enclosingSuperview?.layoutIfNeeded()
         }
     }
+
+    private func updatePlaceholder() {
+        if let text = self.textView.text,
+           !text.isEmpty,
+           text != placeholder {
+            self.textView.font = textFont
+            self.textView.textColor = textColor
+        } else {
+            self.textView.text = placeholder
+            self.textView.font = placeholderFont
+            self.textView.textColor = placeholderColor
+            self.textView.selectedTextRange = self.textView.textRange(from: self.textView.beginningOfDocument, to: self.textView.beginningOfDocument)
+        }
+    }
 }
 
 extension InputTextView: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         didBeginEditing?()
         updateBordersColor()
+        updatePlaceholder()
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
         didEndEditing?(textView.text ?? "")
         resignFirstResponder()
         updateBordersColor()
+        if self.textView.textColor == placeholderColor {
+            self.textView.text = nil
+        }
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        let currentText = textView.text ?? ""
+        let currentText = textView.text == placeholder ? "" : textView.text ?? ""
         if let textRange = Range(range, in: currentText) {
             let nextText = currentText.replacingCharacters(
                 in: textRange,
                 with: text
             )
             let shouldUpdate = self.shouldUpdate?(nextText) ?? true
+            if shouldUpdate {
+                textView.text = nextText.isEmpty ? (placeholder ?? "").appending(" ") : currentText
+            }
             return shouldUpdate
         }
+        textView.text = currentText
         return true
     }
 
     func textViewDidChange(_ textView: UITextView) {
         didUpdateText?(textView.text ?? "")
-        textView.sizeToFit()
-        enclosingSuperview?.layoutIfNeeded()
+        updatePlaceholder()
     }
 }
 
