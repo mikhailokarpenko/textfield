@@ -1,10 +1,6 @@
 import SnapKit
 import UIKit
 
-protocol InputFieldFocusDelegate: AnyObject {
-    func didTap(_ field: InputSumField)
-}
-
 class InputSumField: UIView {
     private let cyanColor: UIColor = .cyan//Asset.Palette.aqua.color
     private let blackColor: UIColor = .black//Asset.Palette.grey30.color
@@ -13,7 +9,7 @@ class InputSumField: UIView {
     private let grey100: UIColor = .gray//Asset.Palette.grey100.color
     /// superview responsible for calling layoutIfNeeded upon inputfield's layout changes
     weak var enclosingSuperview: UIView?
-    weak var delegate: InputFieldFocusDelegate?
+    weak var delegate: InputFocusDelegate?
     private var bottomLabelHiddenConstraint: Constraint!
     lazy var textField: UITextField = {
         let tf = UITextField()

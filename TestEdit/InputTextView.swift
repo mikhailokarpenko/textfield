@@ -8,7 +8,7 @@ import SnapKit
 import UIKit
 
 protocol InputFocusDelegate: AnyObject {
-    func didTap(_ field: InputTextView)
+    func didTap(_ field: UIView)
 }
 
 class InputTextView: UIView {

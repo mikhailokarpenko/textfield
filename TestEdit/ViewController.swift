@@ -8,62 +8,93 @@
 import UIKit
 
 class ViewController: UIViewController {
-    @IBOutlet weak var inputTextView: InputTextView!
+    @IBOutlet weak var inputTextField: InputTextField!
     
+    let leftView: UIView = {
+        let lv = UIView()
+        lv.snp.makeConstraints { make in
+            make.height.width.equalTo(44)
+        }
+        lv.backgroundColor = .green
+        return lv
+    }()
+    
+    let rightView: UIView = {
+        let rv = UIView()
+        rv.snp.makeConstraints { make in
+            make.height.width.equalTo(44)
+        }
+        rv.backgroundColor = .magenta
+        return rv
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        inputTextView.enclosingSuperview = view
-        inputTextView.titleLabel.text = "Тайтл"
-        inputTextView.placeholder = "Подсказка"
+
+        inputTextField.enclosingSuperview = view
+        inputTextField.titleLabel.text = "Title"
+        inputTextField.textField.placeholder = "Placeholder"
         
         
         // MARK: - Tips
         
         // allow to input 4 or less characters
-        inputTextView.shouldUpdate = { $0.count < 155 }
+        inputTextField.shouldUpdate = { $0.count < 155 }
 
 
         // Control when next button tapped
-        inputTextView.shouldReturn = {
+        inputTextField.shouldReturn = {
             print("Next button tapped")
             return false
         }
 
-        inputTextView.didBeginEditing = {
+        inputTextField.didBeginEditing = {
             print("begin editing")
         }
 
-        inputTextView.didEndEditing = { text in
+        inputTextField.didEndEditing = { text in
             print("end editing text: \(text)")
         }
 
-        inputTextView.didUpdateText = { text in
+        inputTextField.didUpdateText = { text in
             print("updated text: \(text)")
         }
     }
     
     
     @IBAction func ShowErrorNew(_ sender: Any) {
-        inputTextView.errorText = "errorText errorText errorText errorText errorText errorText"
+        inputTextField.errorText = "errorText errorText errorText errorText errorText errorText"
     }
     @IBAction func ClearErrorNew(_ sender: Any) {
-        inputTextView.errorText = nil
+        inputTextField.errorText = nil
     }
     @IBAction func EndEditNew(_ sender: Any) {
-        inputTextView.endEditing(true)
+        inputTextField.resignFirstResponder()
     }
     @IBAction func showHint(_ sender: Any) {
-        inputTextView.hintText = "Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint"
+        inputTextField.hintText = "Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint Hint"
     }
     @IBAction func hideHint(_ sender: Any) {
-        inputTextView.hintText = nil
+        inputTextField.hintText = nil
+    }
+    @IBAction func showLeft(_ sender: Any) {
+        inputTextField.leftView = leftView
+    }
+    @IBAction func hideLeft(_ sender: Any) {
+        inputTextField.leftView = nil
+    }
+    @IBAction func showRight(_ sender: Any) {
+        inputTextField.rightView = rightView
+    }
+    @IBAction func hideRight(_ sender: Any) {
+        inputTextField.rightView = nil
+    }
+    @IBAction func showPrefix(_ sender: Any) {
+        
+    }
+    @IBAction func hidePrefix(_ sender: Any) {
     }
     
-    @objc
-    private func currencyPressed() {
-        print("currency button pressed")
-    }
     
 }
 

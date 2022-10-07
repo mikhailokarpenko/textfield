@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="DG9-Ky-lZx">
-                                <rect key="frame" x="16" y="108" width="382" height="187.5"/>
+                                <rect key="frame" x="16" y="108" width="382" height="308.5"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="New" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xed-zy-XfA">
                                         <rect key="frame" x="0.0" y="0.0" width="382" height="20.5"/>
@@ -26,7 +26,7 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bdb-Pv-8DN" customClass="InputTextView" customModule="TestEdit" customModuleProvider="target">
+                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bdb-Pv-8DN" customClass="InputTextField" customModule="TestEdit" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="36.5" width="382" height="50"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
@@ -80,6 +80,69 @@
                                             </button>
                                         </subviews>
                                     </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ELq-9v-SYu">
+                                        <rect key="frame" x="0.0" y="203.5" width="382" height="54.5"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nLH-NR-VhS">
+                                                <rect key="frame" x="0.0" y="0.0" width="95.5" height="54.5"/>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Show Left"/>
+                                                <connections>
+                                                    <action selector="showLeft:" destination="BYZ-38-t0r" eventType="touchUpInside" id="qLO-Lv-Wkn"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="44a-q7-Ry7">
+                                                <rect key="frame" x="95.5" y="0.0" width="95.5" height="54.5"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Hide Left"/>
+                                                <connections>
+                                                    <action selector="hideLeft:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jex-3F-k90"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="UYY-gk-U60">
+                                                <rect key="frame" x="191" y="0.0" width="95.5" height="54.5"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Show Right"/>
+                                                <connections>
+                                                    <action selector="showRight:" destination="BYZ-38-t0r" eventType="touchUpInside" id="5S2-G7-Coi"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="YDB-Lb-sk5">
+                                                <rect key="frame" x="286.5" y="0.0" width="95.5" height="54.5"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Hide Right"/>
+                                                <connections>
+                                                    <action selector="hideRight:" destination="BYZ-38-t0r" eventType="touchUpInside" id="SQL-T7-ocJ"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rLq-Wm-q3U">
+                                        <rect key="frame" x="0.0" y="274" width="382" height="34.5"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="Dj0-Ws-Z3M">
+                                                <rect key="frame" x="0.0" y="0.0" width="191" height="34.5"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Show Prefix"/>
+                                                <connections>
+                                                    <action selector="showPrefix:" destination="BYZ-38-t0r" eventType="touchUpInside" id="MZW-zH-vjj"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="12k-sO-i7t">
+                                                <rect key="frame" x="191" y="0.0" width="191" height="34.5"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Hide Prefix"/>
+                                                <connections>
+                                                    <action selector="hidePrefix:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Oi5-T8-WrH"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
                                 </subviews>
                             </stackView>
                         </subviews>
@@ -93,7 +156,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="1ss-5v-NEd"/>
                     <connections>
-                        <outlet property="inputTextView" destination="bdb-Pv-8DN" id="5vE-DZ-cH4"/>
+                        <outlet property="inputTextField" destination="bdb-Pv-8DN" id="0PE-wB-CJq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
