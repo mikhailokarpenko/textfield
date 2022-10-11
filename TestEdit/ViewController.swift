@@ -90,9 +90,10 @@ class ViewController: UIViewController {
         inputTextField.rightView = nil
     }
     @IBAction func showPrefix(_ sender: Any) {
-        
+        inputTextField.prefixText = "+380"
     }
     @IBAction func hidePrefix(_ sender: Any) {
+        inputTextField.prefixText = nil
     }
     
     

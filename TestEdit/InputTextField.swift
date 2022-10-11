@@ -10,6 +10,14 @@ import UIKit
 class InputTextField: UIView {
     // MARK: - Public properties
 
+    public var prefixText: String? {
+        didSet {
+            prefixLabel.text = prefixText
+            prefixLabel.isHidden = !hasPrefix
+            updatePrefixStackViewVisibility()
+        }
+    }
+    
     public var hintText: String? {
         didSet {
             setupBottomLabel(error: errorText, hint: hintText)
@@ -75,12 +83,31 @@ class InputTextField: UIView {
         tf.isHidden = true
         return tf
     }()
+    
+    private lazy var prefixLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.font = appearance.textfieldFont
+        lbl.textColor = appearance.grey30
+        lbl.isHidden = true
+        lbl.setContentCompressionResistancePriority(.required, for: .horizontal)
+        return lbl
+    }()
 
     private lazy var textStackView: UIStackView = {
-        let sv = UIStackView(arrangedSubviews: [titleLabel, textField])
+        let sv = UIStackView(arrangedSubviews: [titleLabel, prefixFieldStackView])
         sv.axis = .vertical
         sv.alignment = .leading
         sv.spacing = 0
+        return sv
+    }()
+    
+    private lazy var prefixFieldStackView: UIStackView = {
+        let sv = UIStackView(arrangedSubviews: [prefixLabel, textField])
+        sv.axis = .horizontal
+        sv.spacing = 4
+        sv.isHidden = true
+        sv.isUserInteractionEnabled = false
+        sv.clipsToBounds = true
         return sv
     }()
 
@@ -120,6 +147,10 @@ class InputTextField: UIView {
         lbl.font = appearance.footerFont
         return lbl
     }()
+    
+    private var hasPrefix: Bool {
+        prefixText?.isEmpty == false
+    }
 
     private var isError: Bool {
         (errorText ?? String()).isEmpty == false
@@ -127,6 +158,16 @@ class InputTextField: UIView {
 
     private var isEmpty: Bool {
         return textField.text?.isEmpty ?? true
+    }
+    
+    private var titleTransform: CGAffineTransform {
+        let translationX = titleLabel.frame.width * (1 - appearance.titleScaleFactor) / 2
+        let translation = CGAffineTransform(translationX: -translationX, y: 0)
+        let scaling = CGAffineTransform(
+            scaleX: appearance.titleScaleFactor,
+            y: appearance.titleScaleFactor
+        )
+        return translation.concatenating(scaling)
     }
 
     // MARK: - Public methods
@@ -139,16 +180,6 @@ class InputTextField: UIView {
     override func becomeFirstResponder() -> Bool {
         textField.isHidden = false
         clearButtonContainer.isHidden = isEmpty
-        let translationX = titleLabel.frame.width * (1 - appearance.titleScaleFactor) / 2
-        let translation = CGAffineTransform(translationX: -translationX, y: 0)
-        let scaling = CGAffineTransform(
-            scaleX: appearance.titleScaleFactor,
-            y: appearance.titleScaleFactor
-        )
-        UIView.animate(withDuration: appearance.animationDuration, animations: {
-            self.titleLabel.transform = translation.concatenating(scaling)
-            self.mainStackView.layoutIfNeeded()
-        })
         return self.textField.becomeFirstResponder()
     }
 
@@ -157,10 +188,6 @@ class InputTextField: UIView {
         UIView.animate(withDuration: appearance.animationDuration) {
             self.textField.isHidden = self.isEmpty
             self.clearButtonContainer.isHidden = true
-            if self.isEmpty {
-                self.titleLabel.transform = .identity
-            }
-            self.layoutSubviews()
         }
         return self.textField.resignFirstResponder()
     }
@@ -271,6 +298,24 @@ class InputTextField: UIView {
     private func updateTextfieldFont() {
         textField.font = isEmpty ? appearance.placeholderFont : appearance.textfieldFont
     }
+    
+    private func updatePrefixStackViewVisibility() {
+        UIView.animate(withDuration: appearance.animationDuration) {
+            if self.hasPrefix {
+                self.titleLabel.transform = self.titleTransform
+                self.prefixFieldStackView.isHidden = false
+            } else {
+                if self.isEmpty {
+                    self.prefixFieldStackView.isHidden = !self.textField.isFirstResponder
+                    self.titleLabel.transform = self.textField.isFirstResponder ? self.titleTransform : .identity
+                } else {
+                    self.titleLabel.transform = self.titleTransform
+                    self.prefixFieldStackView.isHidden = false
+                }
+            }
+            self.mainStackView.layoutIfNeeded()
+        }
+    }
 }
 
 // MARK: - UITextFieldDelegate
@@ -281,6 +326,7 @@ extension InputTextField: UITextFieldDelegate {
         updateBordersColor()
         clearButtonContainer.isHidden = isEmpty
         updateTextfieldFont()
+        updatePrefixStackViewVisibility()
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -288,6 +334,7 @@ extension InputTextField: UITextFieldDelegate {
         updateBordersColor()
         clearButtonContainer.isHidden = true
         textField.isHidden = isEmpty
+        updatePrefixStackViewVisibility()
     }
 
     func textField(_: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
