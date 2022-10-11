@@ -8,20 +8,68 @@ import SnapKit
 import UIKit
 
 class InputTextField: UIView {
-    let appearance = Appearance()
+    // MARK: - Public properties
+
+    public var hintText: String? {
+        didSet {
+            setupBottomLabel(error: errorText, hint: hintText)
+        }
+    }
+
+    public var errorText: String? {
+        didSet {
+            setupBottomLabel(error: errorText, hint: hintText)
+        }
+    }
+
+    public var leftView: UIView? {
+        willSet {
+            leftView?.removeFromSuperview()
+        }
+        didSet {
+            if let leftView {
+                mainStackView.insertArrangedSubview(leftView, at: 0)
+            }
+        }
+    }
+
+    public var rightView: UIView? {
+        willSet {
+            rightView?.removeFromSuperview()
+        }
+        didSet {
+            if let rightView {
+                mainStackView.addArrangedSubview(rightView)
+            }
+        }
+    }
+
     /// superview responsible for calling layoutIfNeeded upon inputfield's layout changes
-    weak var enclosingSuperview: UIView?
-    weak var delegate: InputFocusDelegate?
+    public weak var enclosingSuperview: UIView?
+    public var shouldUpdate: ((String) -> Bool)?
+    public var didUpdateText: ((String) -> Void)?
+    public var didBeginEditing: (() -> Void)?
+    public var didEndEditing: ((String) -> Void)?
+    public var shouldReturn: (() -> Bool)?
+
+    // MARK: - Private properties
+
+    private let appearance = Appearance()
+    private weak var delegate: InputFocusDelegate?
     private var bottomLabelHiddenConstraint: Constraint!
     private(set) lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
+        label.textColor = appearance.grey100
+        label.font = appearance.titleFont
         return label
     }()
 
     private(set) lazy var textField: UITextField = {
         let tf = UITextField()
         tf.tintColor = appearance.cyanColor
+        tf.textColor = appearance.grey30
+        tf.font = appearance.textfieldFont
         tf.clearButtonMode = .never
         tf.textAlignment = .left
         tf.isHidden = true
@@ -49,7 +97,7 @@ class InputTextField: UIView {
         view.isHidden = true
         return view
     }()
-    
+
     private lazy var mainStackView: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [textStackView, clearButtonContainer])
         sv.axis = .horizontal
@@ -57,51 +105,6 @@ class InputTextField: UIView {
         sv.spacing = 16
         return sv
     }()
-
-    public var errorFont: UIFont = .systemFont(ofSize: 18.0, weight: .regular) {
-        willSet {
-            self.footerLabel.font = newValue
-        }
-    }
-
-    public var hintFont: UIFont = .systemFont(ofSize: 18.0, weight: .regular) {
-        willSet {
-            self.footerLabel.font = newValue
-        }
-    }
-
-    var hintText: String? {
-        didSet {
-            setupBottomLabel(error: errorText, hint: hintText)
-        }
-    }
-
-    var errorText: String? {
-        didSet {
-            setupBottomLabel(error: errorText, hint: hintText)
-        }
-    }
-
-    public var leftView: UIView? {
-        willSet {
-            leftView?.removeFromSuperview()
-        }
-        didSet {
-            if let leftView {
-                mainStackView.insertArrangedSubview(leftView, at: 0)
-            }
-        }
-    }
-    public var rightView: UIView? {
-        willSet {
-            rightView?.removeFromSuperview()
-        }
-        didSet {
-            if let rightView {
-                mainStackView.addArrangedSubview(rightView)
-            }
-        }
-    }
 
     private lazy var roundedContainerView: UIView = {
         let view = UIView()
@@ -111,9 +114,10 @@ class InputTextField: UIView {
         return view
     }()
 
-    private let footerLabel: UILabel = {
+    private lazy var footerLabel: UILabel = {
         let lbl = UILabel()
         lbl.numberOfLines = 0
+        lbl.font = appearance.footerFont
         return lbl
     }()
 
@@ -125,11 +129,7 @@ class InputTextField: UIView {
         return textField.text?.isEmpty ?? true
     }
 
-    var shouldUpdate: ((String) -> Bool)?
-    var didUpdateText: ((String) -> Void)?
-    var didBeginEditing: (() -> Void)?
-    var didEndEditing: ((String) -> Void)?
-    var shouldReturn: (() -> Bool)?
+    // MARK: - Public methods
 
     override var isFirstResponder: Bool {
         return self.textField.isFirstResponder
@@ -141,8 +141,10 @@ class InputTextField: UIView {
         clearButtonContainer.isHidden = isEmpty
         let translationX = titleLabel.frame.width * (1 - appearance.titleScaleFactor) / 2
         let translation = CGAffineTransform(translationX: -translationX, y: 0)
-        let scaling = CGAffineTransform(scaleX: appearance.titleScaleFactor,
-                                        y: appearance.titleScaleFactor)
+        let scaling = CGAffineTransform(
+            scaleX: appearance.titleScaleFactor,
+            y: appearance.titleScaleFactor
+        )
         UIView.animate(withDuration: appearance.animationDuration) {
             self.titleLabel.transform = translation.concatenating(scaling)
             self.layoutSubviews()
@@ -163,6 +165,8 @@ class InputTextField: UIView {
         return self.textField.resignFirstResponder()
     }
 
+    // MARK: - Initializations
+
     override func awakeFromNib() {
         super.awakeFromNib()
     }
@@ -176,6 +180,8 @@ class InputTextField: UIView {
         super.init(coder: aDecoder)
         self.setup()
     }
+
+    // MARK: - Private methods
 
     private func setup() {
         addSubviews()
@@ -239,6 +245,7 @@ class InputTextField: UIView {
     private func clearPressed() {
         textField.text = nil
         clearButtonContainer.isHidden = true
+        updateTextfieldFont()
     }
 
     private func setupBottomLabel(error: String?, hint: String?) {
@@ -246,11 +253,9 @@ class InputTextField: UIView {
         if let err = error, !err.isEmpty {
             text = err
             footerLabel.textColor = appearance.redColor
-            footerLabel.font = errorFont
         } else if let hint = hint {
             text = hint
             footerLabel.textColor = appearance.grey100
-            footerLabel.font = hintFont
         }
 
         footerLabel.text = text
@@ -262,13 +267,20 @@ class InputTextField: UIView {
             self.enclosingSuperview?.layoutIfNeeded()
         }
     }
+    
+    private func updateTextfieldFont() {
+        textField.font = isEmpty ? appearance.placeholderFont : appearance.textfieldFont
+    }
 }
+
+// MARK: - UITextFieldDelegate
 
 extension InputTextField: UITextFieldDelegate {
     func textFieldDidBeginEditing(_: UITextField) {
         didBeginEditing?()
         updateBordersColor()
         clearButtonContainer.isHidden = isEmpty
+        updateTextfieldFont()
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -296,18 +308,26 @@ extension InputTextField: UITextFieldDelegate {
     }
 
     @objc
-    func textFieldDidChanged(textfield: UITextField) {
+    private func textFieldDidChanged(textfield: UITextField) {
         didUpdateText?(textField.text ?? "")
         clearButtonContainer.isHidden = isEmpty
+        updateTextfieldFont()
     }
 }
+
+// MARK: - Appearance
 
 extension InputTextField {
     struct Appearance {
         let cyanColor: UIColor = .cyan//Asset.Palette.aqua.color
-        let grey230: UIColor = .gray//Asset.Palette.grey230.color
+        let grey30: UIColor = .darkGray//Asset.Palette.grey30.color
+        let grey230: UIColor = .lightGray//Asset.Palette.grey230.color
         let redColor: UIColor = .red//Asset.Palette.red.color
         let grey100: UIColor = .gray//Asset.Palette.grey100.color
+        let textfieldFont: UIFont = .systemFont(ofSize: 16, weight: .bold)//Fonts.headline
+        let placeholderFont: UIFont = .systemFont(ofSize: 16)//Fonts.body
+        let titleFont: UIFont = .systemFont(ofSize: 16)//Fonts.callout
+        let footerFont: UIFont = .systemFont(ofSize: 16)//Fonts.callout
         let animationDuration: CGFloat = 0.3
         let titleScaleFactor: CGFloat = 0.8
         let sideInset: CGFloat = 16
