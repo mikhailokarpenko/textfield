@@ -145,10 +145,10 @@ class InputTextField: UIView {
             scaleX: appearance.titleScaleFactor,
             y: appearance.titleScaleFactor
         )
-        UIView.animate(withDuration: appearance.animationDuration) {
+        UIView.animate(withDuration: appearance.animationDuration, animations: {
             self.titleLabel.transform = translation.concatenating(scaling)
-            self.layoutSubviews()
-        }
+            self.mainStackView.layoutIfNeeded()
+        })
         return self.textField.becomeFirstResponder()
     }
 
