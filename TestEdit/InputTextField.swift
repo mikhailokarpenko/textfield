@@ -17,7 +17,7 @@ class InputTextField: UIView {
             updatePrefixStackViewVisibility()
         }
     }
-    
+
     public var hintText: String? {
         didSet {
             setupBottomLabel(error: errorText, hint: hintText)
@@ -73,8 +73,9 @@ class InputTextField: UIView {
         return label
     }()
 
-    private(set) lazy var textField: UITextField = {
-        let tf = UITextField()
+    private(set) lazy var textField: CustomTextField = {
+        let tf = CustomTextField()
+        tf.customDelegate = self
         tf.tintColor = appearance.cyanColor
         tf.textColor = appearance.grey30
         tf.font = appearance.textfieldFont
@@ -83,7 +84,7 @@ class InputTextField: UIView {
         tf.isHidden = true
         return tf
     }()
-    
+
     private lazy var prefixLabel: UILabel = {
         let lbl = UILabel()
         lbl.font = appearance.textfieldFont
@@ -100,7 +101,7 @@ class InputTextField: UIView {
         sv.spacing = 0
         return sv
     }()
-    
+
     private lazy var prefixFieldStackView: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [prefixLabel, textField])
         sv.axis = .horizontal
@@ -128,7 +129,6 @@ class InputTextField: UIView {
     private lazy var mainStackView: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [textStackView, clearButtonContainer])
         sv.axis = .horizontal
-        sv.distribution = .fillProportionally
         sv.spacing = 16
         return sv
     }()
@@ -147,7 +147,7 @@ class InputTextField: UIView {
         lbl.font = appearance.footerFont
         return lbl
     }()
-    
+
     private var hasPrefix: Bool {
         prefixText?.isEmpty == false
     }
@@ -159,7 +159,7 @@ class InputTextField: UIView {
     private var isEmpty: Bool {
         return textField.text?.isEmpty ?? true
     }
-    
+
     private var titleTransform: CGAffineTransform {
         let translationX = titleLabel.frame.width * (1 - appearance.titleScaleFactor) / 2
         let translation = CGAffineTransform(translationX: -translationX, y: 0)
@@ -294,11 +294,11 @@ class InputTextField: UIView {
             self.enclosingSuperview?.layoutIfNeeded()
         }
     }
-    
+
     private func updateTextfieldFont() {
         textField.font = isEmpty ? appearance.placeholderFont : appearance.textfieldFont
     }
-    
+
     private func updatePrefixStackViewVisibility() {
         UIView.animate(withDuration: appearance.animationDuration) {
             if self.hasPrefix {
@@ -320,7 +320,7 @@ class InputTextField: UIView {
 
 // MARK: - UITextFieldDelegate
 
-extension InputTextField: UITextFieldDelegate {
+extension InputTextField: UITextFieldDelegate, CustomTextDelegate {
     func textFieldDidBeginEditing(_: UITextField) {
         didBeginEditing?()
         updateBordersColor()
@@ -360,6 +360,13 @@ extension InputTextField: UITextFieldDelegate {
         clearButtonContainer.isHidden = isEmpty
         updateTextfieldFont()
     }
+
+    // programmatic input change detection
+    func textDidChange(from: String?, to: String?) {
+        didUpdateText?(textField.text ?? "")
+        clearButtonContainer.isHidden = isEmpty
+        updateTextfieldFont()
+    }
 }
 
 // MARK: - Appearance
@@ -367,16 +374,16 @@ extension InputTextField: UITextFieldDelegate {
 extension InputTextField {
     struct Appearance {
         let cyanColor: UIColor = .cyan//Asset.Palette.aqua.color
-        let grey30: UIColor = .darkGray//Asset.Palette.grey30.color
+        let grey30: UIColor = .black//Asset.Palette.grey30.color
         let grey230: UIColor = .lightGray//Asset.Palette.grey230.color
         let redColor: UIColor = .red//Asset.Palette.red.color
         let grey100: UIColor = .gray//Asset.Palette.grey100.color
         let textfieldFont: UIFont = .systemFont(ofSize: 16, weight: .bold)//Fonts.headline
         let placeholderFont: UIFont = .systemFont(ofSize: 16)//Fonts.body
-        let titleFont: UIFont = .systemFont(ofSize: 16)//Fonts.callout
-        let footerFont: UIFont = .systemFont(ofSize: 16)//Fonts.callout
+        let titleFont: UIFont = .systemFont(ofSize: 16)//Fonts.body
+        let footerFont: UIFont = .systemFont(ofSize: 14)//Fonts.callout
         let animationDuration: CGFloat = 0.3
-        let titleScaleFactor: CGFloat = 0.8
+        let titleScaleFactor: CGFloat = 14 / 16
         let sideInset: CGFloat = 16
         let verticalInset: CGFloat = 6
         let baseHeight: CGFloat = 56
